@@ -1,0 +1,1 @@
+pyside-uic baxtergui.ui > baxtergui.py
