@@ -18,131 +18,101 @@
     <property name="geometry">
      <rect>
       <x>40</x>
-      <y>40</y>
+      <y>50</y>
       <width>771</width>
       <height>481</height>
      </rect>
     </property>
     <property name="currentIndex">
-     <number>4</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tab_1_general">
      <attribute name="title">
       <string>General</string>
      </attribute>
-     <widget class="QPushButton" name="pushButton">
-      <property name="geometry">
-       <rect>
-        <x>80</x>
-        <y>80</y>
-        <width>101</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Enable robot</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pushButton_2">
-      <property name="geometry">
-       <rect>
-        <x>80</x>
-        <y>130</y>
-        <width>111</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Disable robot</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pushButton_3">
-      <property name="geometry">
-       <rect>
-        <x>100</x>
-        <y>200</y>
-        <width>151</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Create report</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pushButton_4">
-      <property name="geometry">
-       <rect>
-        <x>100</x>
-        <y>260</y>
-        <width>161</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Send report by mail</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pushButton_5">
-      <property name="geometry">
-       <rect>
-        <x>130</x>
-        <y>330</y>
-        <width>151</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Open log directory</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pushButton_6">
-      <property name="geometry">
-       <rect>
-        <x>460</x>
-        <y>70</y>
-        <width>99</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Run tests</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pushButton_9">
-      <property name="geometry">
-       <rect>
-        <x>460</x>
-        <y>110</y>
-        <width>99</width>
-        <height>27</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Skip Test</string>
-      </property>
-     </widget>
      <widget class="QListWidget" name="listWidget_2">
       <property name="geometry">
        <rect>
-        <x>570</x>
-        <y>70</y>
+        <x>240</x>
+        <y>91</y>
         <width>181</width>
-        <height>192</height>
+        <height>311</height>
        </rect>
       </property>
      </widget>
      <widget class="QLabel" name="label">
       <property name="geometry">
        <rect>
-        <x>580</x>
-        <y>40</y>
-        <width>67</width>
-        <height>17</height>
+        <x>240</x>
+        <y>50</y>
+        <width>71</width>
+        <height>21</height>
        </rect>
       </property>
       <property name="text">
-       <string>Tests todo</string>
+       <string>Progress</string>
       </property>
+     </widget>
+     <widget class="QWidget" name="verticalLayoutWidget_6">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>50</y>
+        <width>160</width>
+        <height>351</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_7">
+       <item>
+        <widget class="QPushButton" name="pushButton_2">
+         <property name="text">
+          <string>Disable robot</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_3">
+         <property name="text">
+          <string>Create report</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton">
+         <property name="text">
+          <string>Enable robot</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_4">
+         <property name="text">
+          <string>Send report by mail</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_5">
+         <property name="text">
+          <string>Open log directory</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_6">
+         <property name="text">
+          <string>Run tests</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButton_9">
+         <property name="text">
+          <string>Skip Test</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_2_buttons">
@@ -162,17 +132,73 @@
        <string>Test all buttons</string>
       </property>
      </widget>
-     <widget class="QTableWidget" name="tableWidget">
+     <widget class="QTableWidget" name="tbl_buttons">
       <property name="geometry">
        <rect>
-        <x>10</x>
-        <y>80</y>
-        <width>371</width>
-        <height>361</height>
+        <x>20</x>
+        <y>20</y>
+        <width>421</width>
+        <height>401</height>
        </rect>
       </property>
+      <property name="editTriggers">
+       <set>QAbstractItemView::NoEditTriggers</set>
+      </property>
+      <property name="dragDropOverwriteMode">
+       <bool>false</bool>
+      </property>
+      <property name="rowCount">
+       <number>12</number>
+      </property>
+      <property name="columnCount">
+       <number>4</number>
+      </property>
+      <attribute name="horizontalHeaderVisible">
+       <bool>false</bool>
+      </attribute>
+      <attribute name="horizontalHeaderCascadingSectionResizes">
+       <bool>false</bool>
+      </attribute>
+      <attribute name="horizontalHeaderHighlightSections">
+       <bool>false</bool>
+      </attribute>
+      <attribute name="verticalHeaderVisible">
+       <bool>false</bool>
+      </attribute>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <row/>
+      <column>
+       <property name="text">
+        <string>Left Buttons</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>States</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Right Buttons</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>States</string>
+       </property>
+      </column>
      </widget>
-     <widget class="QListWidget" name="listWidget">
+     <widget class="QListWidget" name="list_buttons">
       <property name="geometry">
        <rect>
         <x>580</x>
@@ -193,32 +219,6 @@
       </property>
       <property name="text">
        <string>Stop Test</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_2">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>50</y>
-        <width>91</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Button name</string>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_3">
-      <property name="geometry">
-       <rect>
-        <x>270</x>
-        <y>50</y>
-        <width>67</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Status</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_4">
@@ -401,77 +401,6 @@
      <attribute name="title">
       <string>Camera</string>
      </attribute>
-     <widget class="QRadioButton" name="cb_left_camera">
-      <property name="geometry">
-       <rect>
-        <x>40</x>
-        <y>51</y>
-        <width>117</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Left camera</string>
-      </property>
-      <property name="checkable">
-       <bool>true</bool>
-      </property>
-      <property name="checked">
-       <bool>true</bool>
-      </property>
-     </widget>
-     <widget class="QRadioButton" name="cb_head_camera">
-      <property name="geometry">
-       <rect>
-        <x>200</x>
-        <y>40</y>
-        <width>117</width>
-        <height>22</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Head camera</string>
-      </property>
-     </widget>
-     <widget class="QRadioButton" name="cb_right_camera">
-      <property name="geometry">
-       <rect>
-        <x>470</x>
-        <y>50</y>
-        <width>117</width>
-        <height>22</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Right camera</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pushButton_14">
-      <property name="geometry">
-       <rect>
-        <x>570</x>
-        <y>190</y>
-        <width>111</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Save image</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pushButton_15">
-      <property name="geometry">
-       <rect>
-        <x>560</x>
-        <y>120</y>
-        <width>131</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Test all cameras</string>
-      </property>
-     </widget>
      <widget class="QWidget" name="camera_image" native="true">
       <property name="geometry">
        <rect>
@@ -481,6 +410,59 @@
         <height>300</height>
        </rect>
       </property>
+     </widget>
+     <widget class="QWidget" name="verticalLayoutWidget_5">
+      <property name="geometry">
+       <rect>
+        <x>570</x>
+        <y>100</y>
+        <width>160</width>
+        <height>301</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_6">
+       <item>
+        <widget class="QRadioButton" name="cb_left_camera">
+         <property name="text">
+          <string>Left camera</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="cb_head_camera">
+         <property name="text">
+          <string>Head camera</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="cb_right_camera">
+         <property name="text">
+          <string>Right camera</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btn_test_all_cameras">
+         <property name="text">
+          <string>Test all cameras</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btn_save_image">
+         <property name="text">
+          <string>Save image</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_6_arms">
