@@ -109,60 +109,159 @@ class TabCamera():
 
 
 from baxter_core_msgs.msg import *
+from baxter_hr_interface.io.digital_io import DigitalIO
+from baxter_hr_interface.io.navigator import Navigator
 class TabButton():
     def __init__(self,gui):
-        self.post = Post(self)
         self.gui = gui
         self.ui = gui.ui
-        self.rootName = "/robot/"
-        self.buttons = {}
-        side = "left"
-        self.button_names=["shoulder",
-                           "cuff",
-                           "white oval",
-                           "gray circle",
+        #define user interface names
+        self.button_names=["shoulder_button",
+                           "lower_cuff",
+                           "lower_button",
+                           "upper_button",
                            "ok",
                            "wheel",
                            "back",
                            "rethink",
-                           "torso ok",
-                           "torso wheel",
-                           "torso back",
-                           "torso rethink",
+                           "torso_ok",
+                           "torso_wheel",
+                           "torso_back",
+                           "torso_rethink",
                            ]
-        self.button_ids=[
-                         "digital_io/%s_shoulder_button/state"%side,
-                         "digital_io/%s_lower_cuff/state"%side,
-                         "digital_io/%s_lower_button/state"%side,
-                         "digital_io/%s_upper_button/state"%side,
-                         "itb/%s_itb/state/button[0]"%side,
-                         "itb/%s_itb/state/wheel"%side,
-                         "itb/%s_itb/state/button[1]"%side,
-                         "itb/%s_itb/state/button[2]"%side,
-                         "itb/torso_%s_itb/state/button[0]"%side,
-                         "itb/torso_%s_itb/state/wheel"%side,
-                         "itb/torso_%s_itb/state/button[1]"%side,
-                         "itb/torso_%s_itb/state/button[2]"%side,
-                         ]
-        self.button_states=[False for x in xrange(12)]
+        #digital io buttons
+        def digitalIOBtn(side):
+            return [
+                     "%s_shoulder_button"%side,
+                     "%s_lower_cuff"%side,
+                     "%s_lower_button"%side,
+                     "%s_upper_button"%side,
+                     ]
+        #navigator buttons
+        def navigatorBtn(side):
+            return [
+                     "%s"%side,
+                     "torso_%s"%side,
+                     ]      
+            
         
-        
-        self.ui.list_buttons.addItems([""])
         self.ui.tbl_buttons.setColumnCount(3)
         self.ui.tbl_buttons.setRowCount(12)
         self.ui.tbl_buttons.setHorizontalHeaderLabels(["Buttons","Left State","Right State"])
         self.ui.tbl_buttons.horizontalHeader().setVisible(True)
-        i=0
-        for item in self.button_names:
+        
+        for i,item in enumerate(self.button_names):
             newItem = QtGui.QTableWidgetItem(item)
             self.ui.tbl_buttons.setItem(i, 0, newItem)
-            i+=1
+            newItem = QtGui.QTableWidgetItem("N/A")
+            self.ui.tbl_buttons.setItem(i, 1, newItem)
+            newItem = QtGui.QTableWidgetItem("N/A")
+            self.ui.tbl_buttons.setItem(i, 2, newItem)
             
-        i=0     
-        for id in self.button_ids:
-            vars()[self.btnInfo[i][0]] = rospy.Subscriber(self.rootName + id,self.btnInfo[i][1],self.buttonCallback,[i,self.btnInfo[i][1]] )    
         
+        self.button_id=[]
+        for side in ["left","right"]:
+            self.side = side
+            self.ui.list_buttons.addItems([side+"_"+item for item in self.button_names])
+            for id in digitalIOBtn(side):
+                self.button_id.append(DigitalIO(id))
+            for id in navigatorBtn(side):
+                self.button_id.append(Navigator(id))
+        
+        
+        for id in self.button_id:
+            if type(id) == DigitalIO:
+                id.state_changed.connect(self.updateState)
+            if type(id) == Navigator:
+                id.button0_changed.connect(self.updateState)
+                id.button1_changed.connect(self.updateState)
+                id.button2_changed.connect(self.updateState)
+                id.wheel_changed.connect(self.updateState)
             
+
+#         self.updateState(True,"left_shoulder_button")
+#         rospy.sleep(0.5)
+#         self.updateState(False,"left_shoulder_button")
+        
+    def updateState(self,*args):
+        print args
+        state = args[0]
+        if len(args) > 2:
+            button_name = args[1].split("_")
+            if len(button_name) > 1:
+                side = button_name[1]
+                button_name = button_name[0]+"_"
+            else:
+                side = button_name[0]
+                button_name = ""
+                
+            if args[2] == "button":
+                id = args[3]
+                if id == 0:
+                    button_name+="ok"
+                elif id==2:
+                    button_name+="rethink"
+                elif id==1:
+                    button_name+="back"
+            else:
+                button_name+="wheel"
+                state = args[3]
+        else:
+            button_name = args[1].split("_")
+            side = button_name[0]
+            button_name = "_".join(button_name[1:]) 
+
+        newItem = QtGui.QTableWidgetItem(str(state))
+        for i,button in enumerate(self.button_names):
+            if button == button_name:
+                if side == "left":
+                    column = 1
+                else:
+                    column = 2
+                old = self.ui.tbl_buttons.item(i,1).text()
+                if not old == "N/A" and not str(state) == old:
+                    self.removeButtonFromList(side, button)
+                self.ui.tbl_buttons.setItem(i, column, newItem)
+    
+            
+    def removeButtonFromList(self,side,button):
+        list_item=self.ui.list_buttons.findItems(side+"_"+button, QtCore.Qt.MatchRegExp)
+        for item in list_item:
+            self.ui.list_buttons.takeItem(self.ui.list_buttons.row(item))
+    
+from sensor_msgs.msg import Range        
+class TabInfrared():
+    updateCalled = Signal(float,str)
+    def __init__(self,gui):
+        self.gui = gui
+        self.ui = gui.ui
+        self.sub = {}
+        for side in ["left","right"]:
+            self.initIR(side)
+        self.updateCalled.connect(self.updateGUI)
+        
+    def initIR(self,side):
+        if side == "left":
+            self.ui.left_ir_range.setRange (0, 100)
+            self.ui.left_ir_range.setValue(100)
+        else:
+            self.ui.right_ir_range.setRange (0, 100)
+            self.ui.right_ir_range.setValue(100)
+            self.sub[side] = rospy.Subscriber("/robot/range/left_hand_range/state",Range,self.__sensorCallback,callback_args=side,queue_size=1)
+        
+        
+    def __sensorCallback(self,msg,side):
+        self.updateCalled.emit(msg.range,side);
+        
+    @Slot(float,str)
+    def updateGUI(self,range,side):
+        if side == "left":
+            self.ui.left_ir_range.setValue(range)
+        else:
+            self.ui.right_ir_range.setValue(range)
+            
+            
+    
         
 class ControlMainWindow(QtGui.QMainWindow):
 #     cb_left_camera = Signal(int)
@@ -170,8 +269,9 @@ class ControlMainWindow(QtGui.QMainWindow):
         super(ControlMainWindow, self).__init__(parent)
         self.ui =  Ui_BaxterGUI()
         self.ui.setupUi(self)
-#         self.camera = TabCamera(self)
+        self.camera = TabCamera(self)
         self.button = TabButton(self)
+        self.infrared = TabInfrared(self)
         
     def update(self):
         print "update"
