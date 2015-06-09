@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tab_1_general">
      <attribute name="title">
@@ -64,9 +64,16 @@
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_7">
        <item>
-        <widget class="QPushButton" name="pushButton_2">
+        <widget class="QPushButton" name="btn_disable">
          <property name="text">
           <string>Disable robot</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btn_enable">
+         <property name="text">
+          <string>Enable robot</string>
          </property>
         </widget>
        </item>
@@ -78,13 +85,6 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton">
-         <property name="text">
-          <string>Enable robot</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QPushButton" name="pushButton_4">
          <property name="text">
           <string>Send report by mail</string>
@@ -92,7 +92,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_5">
+        <widget class="QPushButton" name="btn_open_log_dir">
          <property name="text">
           <string>Open log directory</string>
          </property>
@@ -218,8 +218,8 @@
        <rect>
         <x>29</x>
         <y>30</y>
-        <width>601</width>
-        <height>341</height>
+        <width>711</width>
+        <height>191</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -232,11 +232,14 @@
        </item>
        <item>
         <widget class="QProgressBar" name="left_ir_range">
+         <property name="maximum">
+          <number>40</number>
+         </property>
          <property name="value">
           <number>24</number>
          </property>
          <property name="format">
-          <string>%pcm</string>
+          <string>%vcm</string>
          </property>
         </widget>
        </item>
@@ -250,7 +253,7 @@
        <item>
         <widget class="QProgressBar" name="right_ir_range">
          <property name="maximum">
-          <number>100</number>
+          <number>40</number>
          </property>
          <property name="value">
           <number>40</number>
@@ -259,21 +262,7 @@
           <bool>true</bool>
          </property>
          <property name="format">
-          <string notr="true">%pcm</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="btn_test_distances">
-         <property name="text">
-          <string>Test distances</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="btn_stop_ir_distance">
-         <property name="text">
-          <string>Stop test</string>
+          <string notr="true">%vcm</string>
          </property>
         </widget>
        </item>

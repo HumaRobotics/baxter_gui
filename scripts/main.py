@@ -230,28 +230,30 @@ class TabButton():
             self.ui.list_buttons.takeItem(self.ui.list_buttons.row(item))
     
 from sensor_msgs.msg import Range        
-class TabInfrared():
+class TabInfrared(QObject):
     updateCalled = Signal(float,str)
     def __init__(self,gui):
+        QObject.__init__(self)
         self.gui = gui
         self.ui = gui.ui
         self.sub = {}
+        self.buff_size = 9
+        self.left_index = 0
+        self.right_index = 0
+        self.left_buffer = [0.0 for i in xrange(self.buff_size)]
+        self.right_buffer = [0.0 for i in xrange(self.buff_size)]
+                       
         for side in ["left","right"]:
-            self.initIR(side)
+            self.sub[side] = rospy.Subscriber("/robot/range/"+side+"_hand_range/state",Range,self.__sensorCallback,callback_args=side,queue_size=1)          
         self.updateCalled.connect(self.updateGUI)
-        
-    def initIR(self,side):
-        if side == "left":
-            self.ui.left_ir_range.setRange (0, 100)
-            self.ui.left_ir_range.setValue(100)
-        else:
-            self.ui.right_ir_range.setRange (0, 100)
-            self.ui.right_ir_range.setValue(100)
-            self.sub[side] = rospy.Subscriber("/robot/range/left_hand_range/state",Range,self.__sensorCallback,callback_args=side,queue_size=1)
-        
+               
         
     def __sensorCallback(self,msg,side):
-        self.updateCalled.emit(msg.range,side);
+        try:
+            range = self.updateBuffer(min(msg.range*40/0.39,40), side)
+            self.updateCalled.emit(range,side);
+        except:
+            pass
         
     @Slot(float,str)
     def updateGUI(self,range,side):
@@ -261,7 +263,50 @@ class TabInfrared():
             self.ui.right_ir_range.setValue(range)
             
             
+    def updateBuffer(self,new_value,side):
+        if side == "left":
+            self.left_buffer[self.left_index] = new_value
+            self.left_index = (self.left_index+1)%self.buff_size
+            return sorted(self.left_buffer)[self.buff_size/2+1]
+        else:
+            self.right_buffer[self.right_index] = new_value
+            self.right_index = (self.right_index+1)%self.buff_size
+            return sorted(self.right_buffer)[self.buff_size/2+1]
     
+from baxter_interface.robot_enable import RobotEnable
+import subprocess
+class TabGeneral(QObject):
+    def __init__(self,gui):
+        QObject.__init__(self)
+        self.gui = gui
+        self.ui = gui.ui
+#         self.robot_enable = RobotEnable()
+        self.ui.btn_enable.clicked.connect(self.enable)
+        self.ui.btn_disable.clicked.connect(self.disable)
+        self.ui.btn_open_log_dir.clicked.connect(self.openLogDir)
+
+    def enable(self):
+        print "enable"
+        self.robot_enable.enable()
+        
+    def disable(self):
+        print "disable"
+        self.robot_enable.disable()
+        
+    def openLogDir(self):
+        subprocess.call(["nautilus",self.getPath("baxter_gui")])
+        
+        
+    def getPath(self,package=None):
+        import os
+        if package is None:
+            path=str(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))+"/log"
+        else:
+            import rospkg
+            path = rospkg.RosPack().get_path(package) +"/log"
+        if not os.path.exists(path):
+            os.makedirs(path)
+        return path
         
 class ControlMainWindow(QtGui.QMainWindow):
 #     cb_left_camera = Signal(int)
@@ -269,9 +314,12 @@ class ControlMainWindow(QtGui.QMainWindow):
         super(ControlMainWindow, self).__init__(parent)
         self.ui =  Ui_BaxterGUI()
         self.ui.setupUi(self)
-        self.camera = TabCamera(self)
-        self.button = TabButton(self)
-        self.infrared = TabInfrared(self)
+#         self.camera = TabCamera(self)
+#         self.button = TabButton(self)
+#         self.infrared = TabInfrared(self)
+        self.general = TabGeneral(self)
+        
+
         
     def update(self):
         print "update"
