@@ -280,18 +280,10 @@ class TabGeneral(QObject):
         QObject.__init__(self)
         self.gui = gui
         self.ui = gui.ui
-#         self.robot_enable = RobotEnable()
-        self.ui.btn_enable.clicked.connect(self.enable)
-        self.ui.btn_disable.clicked.connect(self.disable)
+        self.robot_enable = RobotEnable()
+        self.ui.btn_enable.clicked.connect(self.robot_enable.enable)
+        self.ui.btn_disable.clicked.connect(self.robot_enable.disable)
         self.ui.btn_open_log_dir.clicked.connect(self.openLogDir)
-
-    def enable(self):
-        print "enable"
-        self.robot_enable.enable()
-        
-    def disable(self):
-        print "disable"
-        self.robot_enable.disable()
         
     def openLogDir(self):
         subprocess.call(["nautilus",self.getPath("baxter_gui")])
@@ -307,24 +299,33 @@ class TabGeneral(QObject):
         if not os.path.exists(path):
             os.makedirs(path)
         return path
+
+from baxter_hr_interface.sensors.sonar import Sonar
+class TabSonar(QObject):
+
+    def __init__(self,gui):
+        QObject.__init__(self)
+        self.gui = gui
+        self.ui = gui.ui
+        self.sonar = Sonar()
+        self.ui.btn_sonar_enable.clicked.connect(self.sonar.enable)
+        self.ui.btn_sonar_disable.clicked.connect(self.sonar.disable)
+        
+        for i in range(12):
+            newItem = QtGui.QTableWidgetItem("Sensor "+str(i))
+            self.ui.tbl_sonar.setItem(i, 0, newItem)
         
 class ControlMainWindow(QtGui.QMainWindow):
-#     cb_left_camera = Signal(int)
     def __init__(self, parent=None):
         super(ControlMainWindow, self).__init__(parent)
         self.ui =  Ui_BaxterGUI()
         self.ui.setupUi(self)
-#         self.camera = TabCamera(self)
-#         self.button = TabButton(self)
-#         self.infrared = TabInfrared(self)
+        self.camera = TabCamera(self)
+        self.button = TabButton(self)
+        self.infrared = TabInfrared(self)
         self.general = TabGeneral(self)
-        
+        self.sonar = TabSonar(self)
 
-        
-    def update(self):
-        print "update"
-   
- 
       
 class Application(QtGui.QApplication):
     """used to be able to terminate the qt window by ctrl+c"""
