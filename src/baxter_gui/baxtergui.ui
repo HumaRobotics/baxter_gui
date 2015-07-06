@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>5</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tab_1_general">
      <attribute name="title">
@@ -72,13 +72,33 @@
        </item>
        <item>
         <widget class="QPushButton" name="btn_enable">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="text">
           <string>Enable robot</string>
          </property>
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="btn_tuck">
+         <property name="text">
+          <string>Tuck arms</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btn_untuck">
+         <property name="text">
+          <string>Untuck arms</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="pushButton_3">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="text">
           <string>Create report</string>
          </property>
@@ -86,6 +106,9 @@
        </item>
        <item>
         <widget class="QPushButton" name="pushButton_4">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="text">
           <string>Send report by mail</string>
          </property>
@@ -100,6 +123,9 @@
        </item>
        <item>
         <widget class="QPushButton" name="pushButton_6">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="text">
           <string>Run tests</string>
          </property>
@@ -107,12 +133,33 @@
        </item>
        <item>
         <widget class="QPushButton" name="pushButton_9">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="text">
           <string>Skip Test</string>
          </property>
         </widget>
        </item>
       </layout>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tab_6_arms">
+     <attribute name="title">
+      <string>Arms</string>
+     </attribute>
+     <widget class="QPushButton" name="btn_arms_test">
+      <property name="geometry">
+       <rect>
+        <x>80</x>
+        <y>60</y>
+        <width>261</width>
+        <height>71</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Move arms through entire space</string>
+      </property>
      </widget>
     </widget>
     <widget class="QWidget" name="tab_2_buttons">
@@ -338,30 +385,26 @@
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_8">
        <item>
-        <widget class="QPushButton" name="pushButton_13">
-         <property name="text">
-          <string>Test distances</string>
+        <widget class="QPushButton" name="btn_sonar_reset">
+         <property name="enabled">
+          <bool>true</bool>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pushButton_12">
          <property name="text">
-          <string>Stop test</string>
+          <string>Reset distances</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="btn_sonar_enable">
          <property name="text">
-          <string>Enable</string>
+          <string>Enable sonar</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QPushButton" name="btn_sonar_disable">
          <property name="text">
-          <string>Disable</string>
+          <string>Disable sonar</string>
          </property>
         </widget>
        </item>
@@ -452,29 +495,11 @@
       </property>
      </widget>
     </widget>
-    <widget class="QWidget" name="tab_6_arms">
-     <attribute name="title">
-      <string>Arms</string>
-     </attribute>
-     <widget class="QPushButton" name="pushButton_16">
-      <property name="geometry">
-       <rect>
-        <x>80</x>
-        <y>60</y>
-        <width>261</width>
-        <height>71</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Move arms through entire space</string>
-      </property>
-     </widget>
-    </widget>
     <widget class="QWidget" name="tab_7_head">
      <attribute name="title">
       <string>Head</string>
      </attribute>
-     <widget class="QPushButton" name="pushButton_17">
+     <widget class="QPushButton" name="btn_head_test">
       <property name="geometry">
        <rect>
         <x>70</x>
@@ -516,35 +541,35 @@
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <widget class="QRadioButton" name="radioButton_5">
+        <widget class="QRadioButton" name="cb_display_white">
          <property name="text">
           <string>White</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QRadioButton" name="radioButton_4">
+        <widget class="QRadioButton" name="cb_display_black">
          <property name="text">
           <string>Black</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QRadioButton" name="radioButton_6">
+        <widget class="QRadioButton" name="cb_display_red">
          <property name="text">
           <string>Red</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QRadioButton" name="radioButton_7">
+        <widget class="QRadioButton" name="cb_display_green">
          <property name="text">
           <string>Green</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QRadioButton" name="radioButton_8">
+        <widget class="QRadioButton" name="cb_display_blue">
          <property name="text">
           <string>Blue</string>
          </property>
@@ -552,7 +577,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QPushButton" name="pushButton_18">
+     <widget class="QPushButton" name="btn_display_show_all">
       <property name="geometry">
        <rect>
         <x>490</x>
@@ -576,21 +601,21 @@
         <x>70</x>
         <y>30</y>
         <width>641</width>
-        <height>110</height>
+        <height>41</height>
        </rect>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
         <widget class="QLabel" name="label_10">
          <property name="text">
-          <string>Enable navigator  LED</string>
+          <string>Enable inner navigator  LED</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QLabel" name="label_11">
          <property name="text">
-          <string>Enable sonar LED</string>
+          <string>Enable outer navigator  LED</string>
          </property>
         </widget>
        </item>
@@ -607,71 +632,39 @@
       <property name="geometry">
        <rect>
         <x>70</x>
-        <y>140</y>
+        <y>70</y>
         <width>641</width>
-        <height>161</height>
+        <height>224</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout">
        <item row="0" column="1">
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
-          <widget class="QCheckBox" name="checkBox_5">
+          <widget class="QCheckBox" name="cb_left_itb_light_outer">
            <property name="text">
-            <string>CheckBox</string>
+            <string>Left arm</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="checkBox_6">
+          <widget class="QCheckBox" name="cb_torso_left_itb_light_outer">
            <property name="text">
-            <string>CheckBox</string>
+            <string>Left torso</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="checkBox_7">
+          <widget class="QCheckBox" name="cb_right_itb_light_outer">
            <property name="text">
-            <string>CheckBox</string>
+            <string>Right arm</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="checkBox_8">
+          <widget class="QCheckBox" name="cb_torso_right_itb_light_outer">
            <property name="text">
-            <string>CheckBox</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="0" column="0">
-        <layout class="QVBoxLayout" name="verticalLayout_2">
-         <item>
-          <widget class="QCheckBox" name="checkBox">
-           <property name="text">
-            <string>CheckBox</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="checkBox_2">
-           <property name="text">
-            <string>CheckBox</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="checkBox_3">
-           <property name="text">
-            <string>CheckBox</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="checkBox_4">
-           <property name="text">
-            <string>CheckBox</string>
+            <string>Right torso</string>
            </property>
           </widget>
          </item>
@@ -680,23 +673,48 @@
        <item row="0" column="2">
         <layout class="QVBoxLayout" name="verticalLayout_4">
          <item>
-          <widget class="QCheckBox" name="checkBox_11">
+          <widget class="QCheckBox" name="cb_led_halo_red">
            <property name="text">
-            <string>Both</string>
+            <string>Red</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="checkBox_9">
-           <property name="text">
-            <string>RED</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="checkBox_10">
+          <widget class="QCheckBox" name="cb_led_halo_green">
            <property name="text">
             <string>Green</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="0" column="0">
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="QCheckBox" name="cb_left_itb_light_inner">
+           <property name="text">
+            <string>Left arm</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="cb_torso_left_itb_light_inner">
+           <property name="text">
+            <string>Left torso</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="cb_right_itb_light_inner">
+           <property name="text">
+            <string>Right arm</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="cb_torso_right_itb_light_inner">
+           <property name="text">
+            <string>Right torso</string>
            </property>
           </widget>
          </item>
@@ -709,13 +727,16 @@
        <rect>
         <x>70</x>
         <y>300</y>
-        <width>641</width>
+        <width>644</width>
         <height>80</height>
        </rect>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
         <widget class="QPushButton" name="btn_test_led">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="text">
           <string>Test all LEDs consecutively</string>
          </property>
@@ -754,7 +775,7 @@
        <item>
         <widget class="QPushButton" name="btn_blink_all">
          <property name="text">
-          <string>Blink all LEDs</string>
+          <string>Blink/Stop all LEDs</string>
          </property>
         </widget>
        </item>
@@ -776,14 +797,14 @@
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
        <item row="4" column="0">
-        <widget class="QPushButton" name="btn_left_gripper_test">
+        <widget class="QPushButton" name="btn_gripper_left_test">
          <property name="text">
           <string>Test</string>
          </property>
         </widget>
        </item>
        <item row="3" column="0">
-        <widget class="QPushButton" name="btn_left_gripper_close">
+        <widget class="QPushButton" name="btn_gripper_left_close">
          <property name="text">
           <string>Close</string>
          </property>
@@ -797,7 +818,7 @@
         </widget>
        </item>
        <item row="4" column="1">
-        <widget class="QPushButton" name="btn_right_gripper_test">
+        <widget class="QPushButton" name="btn_gripper_right_test">
          <property name="text">
           <string>Test</string>
          </property>
@@ -818,7 +839,7 @@
         </widget>
        </item>
        <item row="3" column="1">
-        <widget class="QPushButton" name="btn_right_gripper_close">
+        <widget class="QPushButton" name="btn_gripper_right_close">
          <property name="text">
           <string>Close</string>
          </property>

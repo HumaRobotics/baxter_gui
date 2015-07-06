@@ -2,45 +2,45 @@
 
 import rospy
 import sys
+import os
 from PySide import QtCore, QtGui
 from baxter_gui.baxtergui import Ui_BaxterGUI 
 import signal
 from PySide.QtCore import QObject, Signal, Slot
 from hr_helper.post_threading import Post
 
-
 from sensor_msgs.msg import Image
-from baxter_interface.camera import CameraController
+from baxter_hr_interface.sensors.camera import HRCamera
 import cv2
 import cv_bridge
 from PyQt4.Qt import QStringList
 class CameraWrapper(QObject):
     updateCalled = Signal(QtGui.QImage)
-    def __init__(self):
+    def __init__(self,datapath):
         QObject.__init__(self)
-        self.cam=None
         self.sub=None
         self.save_image = False
         self.camera_name = None
+        self.cam = HRCamera()
+        self.datapath = datapath
         
     def open(self,camera_name):
-        if not self.cam is None:
-            self.cam.close()
+        self.close()
         self.camera_name=camera_name
-        self.cam = CameraController(camera_name)
-        self.cam.resolution = (480,300)
-        self.cam.open()
+        self.cam.open(camera_name,(480,300))
         self.sub = rospy.Subscriber("/cameras/%s/image"%camera_name,Image,self.imageCallback,queue_size=1)
         
     def close(self):
         if self.cam is None:
             return
-        self.cam.close()
+        if self.camera_name is None:
+            return
+        self.cam.close(self.camera_name)
         self.sub.unregister()
         
     def imageCallback(self,data):
         if self.save_image:
-            filename = self.camera_name+".jpg"
+            filename = self.datapath + os.sep +"log" + self.camera_name + ".jpg"
             img = cv_bridge.CvBridge().imgmsg_to_cv2(data, "bgr8")
             cv2.imwrite(filename,img)
             rospy.loginfo("Saved Image %s"%filename)
@@ -52,13 +52,13 @@ class CameraWrapper(QObject):
             print e
  
 class TabCamera():
-    def __init__(self,gui):
+    def __init__(self,gui,datapath):
         self.post = Post(self)
         self.gui = gui
         self.ui = gui.ui
         self.lbl = None
         self.initCameraImage()
-        self.cam = CameraWrapper()
+        self.cam = CameraWrapper(datapath)
         self.cam.updateCalled.connect(self.updateImage)
         self.ui.cb_left_camera.clicked.connect(self.updateCamera)
         self.ui.cb_right_camera.clicked.connect(self.updateCamera)
@@ -184,7 +184,7 @@ class TabButton():
 #         self.updateState(False,"left_shoulder_button")
         
     def updateState(self,*args):
-        print args
+#         print args
         state = args[0]
         if len(args) > 2:
             button_name = args[1].split("_")
@@ -273,66 +273,295 @@ class TabInfrared(QObject):
             self.right_index = (self.right_index+1)%self.buff_size
             return sorted(self.right_buffer)[self.buff_size/2+1]
     
+    
+    
+    
+
+from baxter_hr_interface.io.led import Led , HaloLed
+class TabLed():
+    def __init__(self,gui):
+        self.ui = gui.ui
+        self.led = Led()    
+        self.halo = HaloLed()
+        self.blinking = False
+        self.ui.cb_led_halo_green.clicked.connect(self.updateHalo)
+        self.ui.cb_led_halo_red.clicked.connect(self.updateHalo)
+        self.ui.btn_blink_all.clicked.connect(self.blinkLeds)
+
+        for name in self.led.led_names:
+            func = getattr(self.ui, "cb_"+name)
+            func.clicked.connect(lambda name=name, func=func: self.toggleLed(name,func))
+        
+    def blinkLeds(self):
+        if self.blinking:
+            self.led.disableAll()
+            self.blinking = False
+        else:
+            self.blinking = True
+            self.led.blinkAllInner()
+            self.led.blinkAllOuter()
+        
+    def toggleLed(self,name,func):
+        if func.isChecked():
+            self.led.enable(name)
+        else:
+            self.led.disable(name)
+        
+        
+    def updateHalo(self):
+        self.halo.reset()
+        if self.ui.cb_led_halo_green.isChecked() and self.ui.cb_led_halo_red.isChecked():
+            self.halo.setOrange()
+            return
+        if self.ui.cb_led_halo_red.isChecked():
+            self.halo.setRed()
+            return
+        if self.ui.cb_led_halo_green.isChecked():
+            self.halo.setGreen()
+            return
+
+import math
+import baxter_interface
+class TabHead():
+    def __init__(self,gui):
+        self.ui = gui.ui
+        self.post = Post(self)
+        self.head = baxter_interface.Head()
+        self.ui.btn_head_test.clicked.connect(self.__headTest)
+    
+    def __headTest(self):
+        self.post.headTest()
+        
+    def headTest(self):
+        self.head.set_pan(0.0, 100.0)
+        self.head.set_pan(math.pi/2, 100.0)
+        self.head.set_pan(-math.pi/2, 100.0)
+        self.head.set_pan(0.0, 100.0)
+        for i in range(3):
+            self.head.command_nod()
+        
+from baxter_hr_interface.actuators.simple_limb import SimpleLimb
+class TabArms():
+    def __init__(self,gui):
+        self.ui = gui.ui
+        self.post = Post(self)
+        self.arm = {"right": SimpleLimb('right'),
+                    "left":SimpleLimb('left')
+                    }
+        self.ui.btn_arms_test.clicked.connect(self.__armTest)
+        
+    def __armTest(self):
+        self.post.armTest()
+        
+    def armTest(self):
+        joint_moves = (
+                [ 0.0, -0.55, 0.0, 0.75, 0.0, 1.26,  0.0],
+                [ 0.5,  -0.8, 2.8, 0.15, 0.0,  1.9,  2.8],
+                [-0.1,  -0.8,-1.0, 2.5,  0.0, -1.4, -2.8],
+                [ 0.0, -0.55, 0.0, 0.75, 0.0, 1.26,  0.0],
+                )
+        
+        
+        for move in joint_moves:
+            side = "left"
+            th_left = self.arm[side].post.move_to_joint_positions(dict(zip(self.arm[side].joint_names(),move)))
+            side = "right"    
+            self.arm[side].move_to_joint_positions(dict(zip(self.arm[side].joint_names(),move)))
+            th_left.join()
+            
+   
+   
+import numpy as np
+class TabDisplay():
+    def __init__(self,gui):
+        self.ui = gui.ui
+        self.post = Post(self)
+        self._display_pub= rospy.Publisher('/robot/xdisplay',Image, queue_size=1)
+        self.ui.cb_display_white.clicked.connect(lambda: self.setImage("white"))
+        self.ui.cb_display_black.clicked.connect(lambda: self.setImage("black"))
+        self.ui.cb_display_blue.clicked.connect(lambda: self.setImage("blue"))
+        self.ui.cb_display_green.clicked.connect(lambda: self.setImage("green"))
+        self.ui.cb_display_red.clicked.connect(lambda: self.setImage("red"))
+        self.ui.btn_display_show_all.clicked.connect(self.__showAll)
+        
+    def __showAll(self):
+        self.post.showAll()
+        
+    def showAll(self):
+        for color in ["white","black","blue","green","red"]:
+            print "setting color",color
+            self.setImage(color)
+            rospy.sleep(10)
+        print "done"
+                    
+    def setImage(self,color):
+        blank_image = np.zeros((600,1024,3), np.uint8)
+        if color == "black":
+            pass
+        elif color == "white":
+            blank_image[:,:] = (255,255,255)
+        elif color == "blue":
+            blank_image[:,:] = (255,0,0)
+        elif color == "green":
+            blank_image[:,:] = (0,255,0)
+        elif color == "red":
+            blank_image[:,:] = (0,0,255)
+        data = cv_bridge.CvBridge().cv2_to_imgmsg(blank_image,encoding="bgr8")
+        self._display_pub.publish(data)
+    
+from baxter_interface import gripper
+from baxter_core_msgs.msg import (    
+    EndEffectorCommand,
+    )
+class TabGripper():
+    def __init__(self,gui):
+        self.gripper = {"left":gripper.Gripper("left"),
+                         "right":gripper.Gripper("right")}
+
+        self.ui = gui.ui
+        self.ui.btn_gripper_left_calibrate.clicked.connect(lambda: self.gripper["left"].calibrate(False))
+        self.ui.btn_gripper_right_calibrate.clicked.connect(lambda: self.gripper["right"].calibrate(False))
+        self.ui.btn_gripper_left_open.clicked.connect(lambda: self.gripper["left"].open(False))
+        self.ui.btn_gripper_left_close.clicked.connect(lambda: self.gripper["left"].close(False))
+        self.ui.btn_gripper_right_open.clicked.connect(lambda: self.gripper["right"].open(False))
+        self.ui.btn_gripper_right_close.clicked.connect(lambda: self.gripper["right"].close(False))
+        self.ui.btn_gripper_left_test.clicked.connect(lambda: self.evaluateGripper("left"))
+        self.ui.btn_gripper_right_test.clicked.connect(lambda: self.evaluateGripper("right"))
+    
+    def evaluateGripper(self,side):
+        for i in range(5):
+            self.gripper[side].open()
+            rospy.sleep(1)
+            self.gripper[side].close()
+            rospy.sleep(1)
+    
 from baxter_interface.robot_enable import RobotEnable
+from baxter_core_msgs.msg import AssemblyState
+from baxter_hr_interface.actuators.tuck_arms import Tucker
 import subprocess
 class TabGeneral(QObject):
     def __init__(self,gui):
         QObject.__init__(self)
         self.gui = gui
         self.ui = gui.ui
-        self.robot_enable = RobotEnable()
-        self.ui.btn_enable.clicked.connect(self.robot_enable.enable)
-        self.ui.btn_disable.clicked.connect(self.robot_enable.disable)
+        
+        if not self.gui.offline:
+            self.robot_enable = RobotEnable()
+            self.ui.btn_enable.clicked.connect(self.robot_enable.enable)
+            self.ui.btn_disable.clicked.connect(self.robot_enable.disable)
+            self.tucker = Tucker()
+            if self.tucker.isTucked():
+                self.ui.btn_enable.setEnabled(False)
+            else:
+                self.ui.btn_enable.setEnabled(True)
+            self.ui.btn_untuck.clicked.connect(self.untuck)
+            self.ui.btn_tuck.clicked.connect(self.tuck)
         self.ui.btn_open_log_dir.clicked.connect(self.openLogDir)
         
+    def untuck(self):
+        self.tucker.untuck()
+        self.ui.btn_enable.setEnabled(True)
+        
+    def tuck(self):
+        self.tucker.tuck()
+        self.ui.btn_enable.setEnabled(False)
+    
     def openLogDir(self):
-        subprocess.call(["nautilus",self.getPath("baxter_gui")])
+        subprocess.call(["nautilus",self.getPath("baxter_gui")+os.sep+"log"])
         
         
     def getPath(self,package=None):
         import os
         if package is None:
-            path=str(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))+"/log"
+            path=str(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         else:
             import rospkg
-            path = rospkg.RosPack().get_path(package) +"/log"
+            path = rospkg.RosPack().get_path(package)
         if not os.path.exists(path):
             os.makedirs(path)
         return path
+    
 
 from baxter_hr_interface.sensors.sonar import Sonar
 class TabSonar(QObject):
-
+    updateDistances = Signal(list)
     def __init__(self,gui):
         QObject.__init__(self)
+        self.sonar = Sonar()
         self.gui = gui
         self.ui = gui.ui
-        self.sonar = Sonar()
+        self.post = Post(self)
         self.ui.btn_sonar_enable.clicked.connect(self.sonar.enable)
         self.ui.btn_sonar_disable.clicked.connect(self.sonar.disable)
+        self.updateDistances.connect(self.updateGui)
+        self.ui.btn_sonar_reset.clicked.connect(self.reset)
         
         for i in range(12):
             newItem = QtGui.QTableWidgetItem("Sensor "+str(i))
             self.ui.tbl_sonar.setItem(i, 0, newItem)
+        self.reset()
+        
+        self.post.callback()
+            
+    def callback(self):
+
+        while not rospy.is_shutdown():
+            self.updateDistances.emit(self.sonar.getRanges())
+            rospy.sleep(0.1)
+     
+    def reset(self):
+        for i in range(12):
+            newItem = QtGui.QTableWidgetItem("None")
+            self.ui.tbl_sonar.setItem(i, 1, newItem)
+        
+    def updateGui(self,distances):
+        for i,distance in enumerate(distances):
+            if distance is None:
+                continue
+            newItem = QtGui.QTableWidgetItem(str(distance))
+            self.ui.tbl_sonar.setItem(i, 1, newItem)
         
 class ControlMainWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
         super(ControlMainWindow, self).__init__(parent)
         self.ui =  Ui_BaxterGUI()
         self.ui.setupUi(self)
-        self.camera = TabCamera(self)
-        self.button = TabButton(self)
-        self.infrared = TabInfrared(self)
+        self.offline = True
+        try:
+            rospy.wait_for_message("/robot/state",AssemblyState,2.0)
+            self.offline = False
+        except rospy.exceptions.ROSException:
+            self.offline = True
+            
         self.general = TabGeneral(self)
-        self.sonar = TabSonar(self)
-
+        datapath = self.general.getPath("baxter_gui") + os.sep
+        if not self.offline:
+            self.camera = TabCamera(self,datapath)
+            self.button = TabButton(self)
+            self.infrared = TabInfrared(self)
+            self.sonar = TabSonar(self)
+            self.gripper = TabGripper(self)
+            self.led = TabLed(self)
+            self.display = TabDisplay(self)
+            self.head = TabHead(self)
+            self.arms = TabArms(self)
+            
+    def keyPressEvent(self, e):
+        #closes the window on escape
+        if e.key() == QtCore.Qt.Key_Escape:
+            self.close()
+            
+        
+        
       
 class Application(QtGui.QApplication):
     """used to be able to terminate the qt window by ctrl+c"""
-    def event(self, e):
+    def event(self, e):    
         return QtGui.QApplication.event(self, e)
 
         
+    
+
     
 if __name__ == "__main__":
     rospy.init_node("BaxterGUI")
