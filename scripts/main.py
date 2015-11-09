@@ -25,10 +25,12 @@ class CameraWrapper(QObject):
         self.datapath = datapath
         
     def open(self,camera_name):
-        self.close()
+        cur_cam = self.camera_name
         self.camera_name=camera_name
         self.cam.open(camera_name,(480,300))
         self.sub = rospy.Subscriber("/cameras/%s/image"%camera_name,Image,self.imageCallback,queue_size=1)
+        if camera_name != cur_cam:
+            self.close()   
         
     def close(self):
         print "trying to close ",self.camera_name
@@ -37,7 +39,7 @@ class CameraWrapper(QObject):
         if self.camera_name is None:
             return
         self.cam.close(self.camera_name)
-        self.sub.unregister()
+        #self.sub.unregister()
         
     def imageCallback(self,data):
         if self.save_image:

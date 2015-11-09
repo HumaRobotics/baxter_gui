@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'baxtergui.ui'
+# Form implementation generated from reading ui file 'src/baxter_gui/baxtergui.ui'
 #
-# Created: Mon Jul  6 16:34:53 2015
+# Created: Fri Jul 10 15:48:47 2015
 #      by: pyside-uic 0.2.15 running on PySide 1.2.1
 #
 # WARNING! All changes made in this file will be lost!
