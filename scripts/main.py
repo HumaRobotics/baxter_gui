@@ -7,10 +7,10 @@ from PySide import QtCore, QtGui
 from baxter_gui.baxtergui import Ui_BaxterGUI 
 import signal
 from PySide.QtCore import QObject, Signal, Slot
-from hr_helper.post_threading import Post
+from baxter_gui.post_threading import Post
 
 from sensor_msgs.msg import Image
-from baxter_hr_interface.sensors.camera import HRCamera
+from baxter_gui.camera import HRCamera
 import cv2
 import cv_bridge
 from PyQt4.Qt import QStringList
@@ -31,6 +31,7 @@ class CameraWrapper(QObject):
         self.sub = rospy.Subscriber("/cameras/%s/image"%camera_name,Image,self.imageCallback,queue_size=1)
         
     def close(self):
+        print "trying to close ",self.camera_name
         if self.cam is None:
             return
         if self.camera_name is None:
@@ -109,8 +110,8 @@ class TabCamera():
 
 
 from baxter_core_msgs.msg import *
-from baxter_hr_interface.io.digital_io import DigitalIO
-from baxter_hr_interface.io.navigator import Navigator
+from baxter_gui.digital_io import DigitalIO
+from baxter_gui.navigator import Navigator
 class TabButton():
     def __init__(self,gui):
         self.gui = gui
@@ -277,7 +278,7 @@ class TabInfrared(QObject):
     
     
 
-from baxter_hr_interface.io.led import Led , HaloLed
+from baxter_gui.led import Led , HaloLed
 class TabLed():
     def __init__(self,gui):
         self.ui = gui.ui
@@ -340,7 +341,7 @@ class TabHead():
         for i in range(3):
             self.head.command_nod()
         
-from baxter_hr_interface.actuators.simple_limb import SimpleLimb
+from baxter_gui.simple_limb import SimpleLimb
 class TabArms():
     def __init__(self,gui):
         self.ui = gui.ui
@@ -437,7 +438,7 @@ class TabGripper():
     
 from baxter_interface.robot_enable import RobotEnable
 from baxter_core_msgs.msg import AssemblyState
-from baxter_hr_interface.actuators.tuck_arms import Tucker
+from baxter_gui.tuck_arms import Tucker
 import subprocess
 class TabGeneral(QObject):
     def __init__(self,gui):
@@ -482,7 +483,7 @@ class TabGeneral(QObject):
         return path
     
 
-from baxter_hr_interface.sensors.sonar import Sonar
+from baxter_gui.sonar import Sonar
 class TabSonar(QObject):
     updateDistances = Signal(list)
     def __init__(self,gui):
