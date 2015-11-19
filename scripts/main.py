@@ -151,12 +151,13 @@ class TabButton():
                      "torso_%s"%side,
                      ]      
             
-        
+        # Set header for table
         self.ui.tbl_buttons.setColumnCount(3)
         self.ui.tbl_buttons.setRowCount(12)
         self.ui.tbl_buttons.setHorizontalHeaderLabels(["Buttons","Left State","Right State"])
         self.ui.tbl_buttons.horizontalHeader().setVisible(True)
         
+        # Fill table
         for i,item in enumerate(self.button_names):
             newItem = QtGui.QTableWidgetItem(item)
             self.ui.tbl_buttons.setItem(i, 0, newItem)
@@ -166,24 +167,31 @@ class TabButton():
             self.ui.tbl_buttons.setItem(i, 2, newItem)
             
         
+        
+        # Create Object instances and list for buttons to push
         self.button_id=[]
         for side in ["left","right"]:
             self.side = side
             self.ui.list_buttons.addItems([side+"_"+item for item in self.button_names])
-            for id in digitalIOBtn(side):
-                self.button_id.append(DigitalIO(id))
-            for id in navigatorBtn(side):
-                self.button_id.append(Navigator(id))
+            if not self.gui.offline:
+                for id in digitalIOBtn(side):
+                    self.button_id.append(DigitalIO(id))
+                for id in navigatorBtn(side):
+                    self.button_id.append(Navigator(id))
         
         
-        for id in self.button_id:
-            if type(id) == DigitalIO:
-                id.state_changed.connect(self.updateState)
-            if type(id) == Navigator:
-                id.button0_changed.connect(self.updateState)
-                id.button1_changed.connect(self.updateState)
-                id.button2_changed.connect(self.updateState)
-                id.wheel_changed.connect(self.updateState)
+        
+        # Connect all buttons to a callback on button change
+        if not self.gui.offline:
+            for id in self.button_id:
+                print id
+                if type(id) == DigitalIO:
+                    id.state_changed.connect(self.updateState)
+                if type(id) == Navigator:
+                    id.button0_changed.connect(self.updateState)
+                    id.button1_changed.connect(self.updateState)
+                    id.button2_changed.connect(self.updateState)
+                    id.wheel_changed.connect(self.updateState)
             
 
 #         self.updateState(True,"left_shoulder_button")
@@ -226,15 +234,19 @@ class TabButton():
                 else:
                     column = 2
                 old = self.ui.tbl_buttons.item(i,1).text()
-                if not old == "N/A" and not str(state) == old:
+#                 if not old == "N/A" and not str(state) == old:
+                if old == "N/A":
                     self.removeButtonFromList(side, button)
                 self.ui.tbl_buttons.setItem(i, column, newItem)
     
             
     def removeButtonFromList(self,side,button):
-        list_item=self.ui.list_buttons.findItems(side+"_"+button, QtCore.Qt.MatchRegExp)
-        for item in list_item:
-            self.ui.list_buttons.takeItem(self.ui.list_buttons.row(item))
+        try:
+            list_item=self.ui.list_buttons.findItems(side+"_"+button, QtCore.Qt.MatchRegExp)
+            for item in list_item:
+                self.ui.list_buttons.takeItem(self.ui.list_buttons.row(item))
+        except Exception,e:
+            print e
     
 from sensor_msgs.msg import Range        
 class TabInfrared(QObject):
@@ -542,9 +554,9 @@ class ControlMainWindow(QtGui.QMainWindow):
             
         self.general = TabGeneral(self)
         datapath = self.general.getPath("baxter_gui") + os.sep
+        self.button = TabButton(self)
         if not self.offline:
             self.camera = TabCamera(self,datapath)
-            self.button = TabButton(self)
             self.infrared = TabInfrared(self)
             self.sonar = TabSonar(self)
             self.gripper = TabGripper(self)
