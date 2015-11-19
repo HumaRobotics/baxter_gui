@@ -25,9 +25,13 @@ class CameraWrapper(QObject):
         self.datapath = datapath
         
     def open(self,camera_name):
+        if self.camera_name == camera_name:
+            return
         cur_cam = self.camera_name
         self.camera_name=camera_name
         self.cam.open(camera_name,(480,300))
+        if not self.sub is None:
+            self.sub.unregister()
         self.sub = rospy.Subscriber("/cameras/%s/image"%camera_name,Image,self.imageCallback,queue_size=1)
         if camera_name != cur_cam:
             self.close()   
@@ -365,7 +369,7 @@ class TabArms():
                 )
         
         
-        for move in joint_moves:
+        for move in joint_moves:# todo try to use the basic interface
             side = "left"
             th_left = self.arm[side].post.move_to_joint_positions(dict(zip(self.arm[side].joint_names(),move)))
             side = "right"    
