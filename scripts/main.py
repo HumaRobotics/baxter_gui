@@ -233,7 +233,7 @@ class TabButton():
                     column = 1
                 else:
                     column = 2
-                old = self.ui.tbl_buttons.item(i,1).text()
+                old = self.ui.tbl_buttons.item(i,column).text()
 #                 if not old == "N/A" and not str(state) == old:
                 if old == "N/A":
                     self.removeButtonFromList(side, button)
@@ -242,6 +242,7 @@ class TabButton():
             
     def removeButtonFromList(self,side,button):
         try:
+            print "side",side,"button",button
             list_item=self.ui.list_buttons.findItems(side+"_"+button, QtCore.Qt.MatchRegExp)
             for item in list_item:
                 self.ui.list_buttons.takeItem(self.ui.list_buttons.row(item))
