@@ -120,20 +120,20 @@ class Led():
         """
             Class to control all leds
             Available leds are:
-            * 'left_itb_light_outer',
-            * 'left_itb_light_inner',
-            * 'right_itb_light_outer',
-            * 'right_itb_light_inner',
-            * 'torso_left_itb_light_outer',
-            * 'torso_left_itb_light_inner',
-            * 'torso_right_itb_light_outer',
-            * 'torso_right_itb_light_inner'
+            * 'left_outer_light',
+            * 'left_inner_light',
+            * 'right_outer_light',
+            * 'right_inner_light',
+            * 'torso_left_outer_light',
+            * 'torso_left_inner_light',
+            * 'torso_right_outer_light',
+            * 'torso_right_inner_light'
         """
         self.post = Post(self) 
-        self.led_names = ['left_itb_light_outer','left_itb_light_inner', 
-                          'right_itb_light_outer', 'right_itb_light_inner',
-                          'torso_left_itb_light_outer','torso_left_itb_light_inner',
-                          'torso_right_itb_light_outer','torso_right_itb_light_inner']
+        self.led_names = ['left_outer_light','left_inner_light', 
+                          'right_outer_light', 'right_inner_light',
+                          'torso_left_outer_light','torso_left_inner_light',
+                          'torso_right_outer_light','torso_right_inner_light']
         self.led_handle = {}
         self.led_state = {}
         try:

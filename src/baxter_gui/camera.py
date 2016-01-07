@@ -42,6 +42,7 @@
 import rospy
 import cv2
 import cv_bridge
+import rosgraph
 
 from sensor_msgs.msg import Image
 
@@ -104,15 +105,32 @@ class HRCamera():
         self.__getAllCameras()
             
     def openedCameras(self):
-        try:
-            srv = "/cameras/list"
-            rospy.wait_for_service(srv, 5.0)
-            camera_list_srv = rospy.ServiceProxy(srv, ListCameras)
-            return camera_list_srv().cameras            
-        except Exception, e:
-            rospy.logerr("%s"%str(e))
-            return None
-        
+        ls = rospy.ServiceProxy('cameras/list', ListCameras)
+        rospy.wait_for_service('cameras/list', timeout=10)
+        resp = ls()
+        opened_camera = []
+        if len(resp.cameras):
+            # Find open (publishing) cameras
+            master = rosgraph.Master('/rostopic')
+            resp.cameras
+            cam_topics = dict([(cam, "/cameras/%s/image" % cam)
+                                   for cam in resp.cameras])
+            open_cams = dict([(cam, False) for cam in resp.cameras])
+            try:
+                topics = master.getPublishedTopics('')
+                for topic in topics:
+                    for cam in resp.cameras:
+                        if topic[0] == cam_topics[cam]:
+                            open_cams[cam] = True
+            except socket.error:
+                raise ROSTopicIOException("Cannot communicate with master.")
+            for cam in resp.cameras:
+                if open_cams[cam]:
+                    opened_camera.append(cam)
+            return opened_camera  
+        else:
+        	return opened_camera         
+
     def __getAllCameras(self):
         """
             Gets all available cameras from the robot and create a controller for them

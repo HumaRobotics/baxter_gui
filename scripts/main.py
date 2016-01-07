@@ -353,10 +353,10 @@ class TabHead():
         self.post.headTest()
         
     def headTest(self):
-        self.head.set_pan(0.0, 100.0)
-        self.head.set_pan(math.pi/2, 100.0)
-        self.head.set_pan(-math.pi/2, 100.0)
-        self.head.set_pan(0.0, 100.0)
+        self.head.set_pan(0.0, 1)
+        self.head.set_pan(math.pi/2, 1)
+        self.head.set_pan(-math.pi/2, 1)
+        self.head.set_pan(0.0, 1)
         for i in range(3):
             self.head.command_nod()
         
