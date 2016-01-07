@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>8</number>
     </property>
     <widget class="QWidget" name="tab_1_general">
      <attribute name="title">
@@ -641,28 +641,28 @@
        <item row="0" column="1">
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
-          <widget class="QCheckBox" name="cb_left_itb_light_outer">
+          <widget class="QCheckBox" name="cb_left_outer_light">
            <property name="text">
             <string>Left arm</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="cb_torso_left_itb_light_outer">
+          <widget class="QCheckBox" name="cb_torso_left_outer_light">
            <property name="text">
             <string>Left torso</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="cb_right_itb_light_outer">
+          <widget class="QCheckBox" name="cb_right_outer_light">
            <property name="text">
             <string>Right arm</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="cb_torso_right_itb_light_outer">
+          <widget class="QCheckBox" name="cb_torso_right_outer_light">
            <property name="text">
             <string>Right torso</string>
            </property>
@@ -691,28 +691,28 @@
        <item row="0" column="0">
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
-          <widget class="QCheckBox" name="cb_left_itb_light_inner">
+          <widget class="QCheckBox" name="cb_left_inner_light">
            <property name="text">
             <string>Left arm</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="cb_torso_left_itb_light_inner">
+          <widget class="QCheckBox" name="cb_torso_left_inner_light">
            <property name="text">
             <string>Left torso</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="cb_right_itb_light_inner">
+          <widget class="QCheckBox" name="cb_right_inner_light">
            <property name="text">
             <string>Right arm</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="cb_torso_right_itb_light_inner">
+          <widget class="QCheckBox" name="cb_torso_right_inner_light">
            <property name="text">
             <string>Right torso</string>
            </property>
