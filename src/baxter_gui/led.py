@@ -40,7 +40,7 @@
 #
 #############################################################################
 import rospy
-from hr_helper.post_threading import Post
+from baxter_gui.post_threading import Post
 import baxter_interface
 from std_msgs.msg import Float32
 
