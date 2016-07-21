@@ -19,6 +19,9 @@ catkin_make
 cd src/baxter_gui
 ./create_ui.sh
 ```
+
+Execute
+
 * Run the main script (preferably, when you are connected to a baxter)
 ```
 rosrun baxter_gui main.py
