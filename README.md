@@ -8,7 +8,7 @@ sudo apt-get install pyside-tools
 ```
 * Clone the repo into your source of your ROS workspace:
 ```
-git clone https://github.com/HumaRobotics/baxter_evalutation_gui.git
+git clone https://github.com/HumaRobotics/baxter_gui.git
 ```
 * Do a catkin make in the root of your workspace
 ```
@@ -16,7 +16,7 @@ catkin_make
 ```
 * Create the baxtergui.py. Go inside the source 
 ```
-cd src/baxter_gui
+cd baxter_gui/src/baxter_gui
 ./create_ui.sh
 ```
 
